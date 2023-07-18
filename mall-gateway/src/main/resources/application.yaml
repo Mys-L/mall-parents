@@ -2,4 +2,13 @@ spring:
   cloud:
     gateway:
       routes:
-        - id:
+
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+
+
+
