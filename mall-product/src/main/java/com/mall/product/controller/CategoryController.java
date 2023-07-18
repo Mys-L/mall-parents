@@ -58,6 +58,16 @@ public class CategoryController {
     }
 
     /**
+     * 批量修改
+     */
+    @RequestMapping("/update/sort")
+    public R updateSort(@RequestBody CategoryEntity[] category){
+		categoryService.updateBatchById(Arrays.asList(category));
+
+        return R.ok();
+    }
+
+    /**
      * 修改
      */
     @RequestMapping("/update")
@@ -66,6 +76,7 @@ public class CategoryController {
 
         return R.ok();
     }
+
 
     /**
      * 删除RequestBody 获取请求体 发送post请求
