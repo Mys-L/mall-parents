@@ -63,4 +63,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }).toList();
         return children;
     }
+
+    @Override
+    public void removeMenuByIds(List<Long> list) {
+        //TODO 检查当前被删除菜单是否被其它地方引用
+        baseMapper.deleteBatchIds(list);
+    }
+
 }

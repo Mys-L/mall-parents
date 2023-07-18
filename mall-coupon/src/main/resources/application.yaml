@@ -30,5 +30,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+      logic-delete-field: 1
+      logic-not-delete-value: 0
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

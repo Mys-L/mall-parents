@@ -68,12 +68,12 @@ public class CategoryController {
     }
 
     /**
-     * 删除
+     * 删除RequestBody 获取请求体 发送post请求
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] catIds){
-		categoryService.removeByIds(Arrays.asList(catIds));
-
+		//categoryService.removeByIds(Arrays.asList(catIds));
+        categoryService.removeMenuByIds(Arrays.asList(catIds));
         return R.ok();
     }
 
