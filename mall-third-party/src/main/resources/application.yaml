@@ -1,0 +1,23 @@
+server:
+  port: 30000
+spring:
+  application:
+    name: mall-third-party
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        #指定文件名，没有则默认${spring.application.name}
+        #指定文件后缀
+        file-extension: yaml
+        import-check:
+          enabled: false
+    alicloud:
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+        bucket: mys-l
+      access-key: LTAI5tMZJnVnTJmEo8VcMtB4
+      secret-key: QO1wNb8dARgdHPeWgeM2DSZ95C8eRY
+    util:
+      enabled: false
