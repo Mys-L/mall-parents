@@ -40,11 +40,12 @@
 			<artifactId>caffeine</artifactId>
 		</dependency>
 
-		<dependency>
+        <dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-alicloud-oss</artifactId>
 			<version>2.2.0.RELEASE</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

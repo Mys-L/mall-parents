@@ -16,25 +16,24 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
 /**
  * @author L
  */
-
 @RestController
 public class OssController {
 
     @Autowired
     OSS ossClient;
 
-    @Value("${spring.cloud.alicloud.oss.endpoint}")
-    String endpoint ;
     @Value("${spring.cloud.alicloud.oss.bucket}")
-    String bucket ;
+    private String bucket;
+    @Value("${spring.cloud.alicloud.oss.endpoint}")
+    private String endpoint;
     @Value("${spring.cloud.alicloud.access-key}")
-    String accessId ;
+    private String accessKey;
     @Value("${spring.cloud.alicloud.secret-key}")
-    String accessKey ;
-
+    private String secretKey;
 
     @RequestMapping("/oss/policy")
     public R policy(){
@@ -42,23 +41,23 @@ public class OssController {
         String host = "https://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint
         String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         // 用户上传文件时指定的前缀。 // 如果想以日期为文件夹
-        String dir = format+"/";
+        String dir = format;
         Map<String, String> respMap=null;
         try {
             long expireTime = 30;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
             Date expiration = new Date(expireEndTime);
-            PolicyConditions policyConds = new PolicyConditions();
-            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
-            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
+            PolicyConditions policyCords = new PolicyConditions();
+            policyCords.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
+            policyCords.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
 
-            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+            String postPolicy = ossClient.generatePostPolicy(expiration, policyCords);
             byte[] binaryData = postPolicy.getBytes(StandardCharsets.UTF_8);
             String encodedPolicy = BinaryUtil.toBase64String(binaryData);
             String postSignature = ossClient.calculatePostSignature(postPolicy);
 
             respMap= new LinkedHashMap<String, String>();
-            respMap.put("accessId", accessId);
+            respMap.put("accessKey", accessKey);
             respMap.put("policy", encodedPolicy);
             respMap.put("signature", postSignature);
             respMap.put("dir", dir);
@@ -72,4 +71,5 @@ public class OssController {
         }
         return R.ok().put("data",respMap);
     }
+
 }

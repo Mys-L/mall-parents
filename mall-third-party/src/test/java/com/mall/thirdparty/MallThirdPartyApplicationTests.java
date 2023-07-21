@@ -1,5 +1,6 @@
 package com.mall.thirdparty;
 
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -8,6 +9,7 @@ class MallThirdPartyApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
