@@ -29,7 +29,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public PageUtils queryPage(Map<String, Object> params, Long categlogId) {
-        String key = params.get("key").toString();
+        String key =(String) params.get("key");
         QueryWrapper<AttrGroupEntity> wrapper = new QueryWrapper<AttrGroupEntity>();
         if (!StringUtils.isEmpty(key)) {
             wrapper.and(obj->{

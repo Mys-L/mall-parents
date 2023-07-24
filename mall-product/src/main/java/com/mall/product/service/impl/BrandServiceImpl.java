@@ -25,7 +25,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<BrandEntity> queryWrapper = new QueryWrapper<>();
-        String key = params.get("key").toString();
+        String key =(String) params.get("key");
         if (!StringUtils.isEmpty(key)) {
             queryWrapper.eq("brand_id",key).or().like("name",key);
         }

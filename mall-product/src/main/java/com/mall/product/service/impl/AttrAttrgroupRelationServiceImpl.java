@@ -1,6 +1,10 @@
 package com.mall.product.service.impl;
 
+import com.mall.product.vo.AttrGroupRelatinVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +28,16 @@ public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupR
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void saveBatch(List<AttrGroupRelatinVo> vos) {
+        List<AttrAttrgroupRelationEntity> collect = vos.stream().map((item) -> {
+            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(item, relationEntity);
+            return relationEntity;
+        }).toList();
+        this.saveBatch(collect);
     }
 
 }

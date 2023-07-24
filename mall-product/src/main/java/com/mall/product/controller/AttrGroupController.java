@@ -1,15 +1,16 @@
 package com.mall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.mall.product.entity.AttrEntity;
+import com.mall.product.service.AttrAttrgroupRelationService;
+import com.mall.product.service.AttrService;
 import com.mall.product.service.CategoryService;
+import com.mall.product.vo.AttrGroupRelatinVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mall.product.entity.AttrGroupEntity;
 import com.mall.product.service.AttrGroupService;
@@ -32,6 +33,36 @@ public class AttrGroupController {
     private AttrGroupService attrGroupService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    AttrService attrService;
+    @Autowired
+    AttrAttrgroupRelationService relationService;
+
+
+
+    @PostMapping("/attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupRelatinVo> vos) {
+        relationService.saveBatch(vos);
+        return R.ok();
+    }
+    //没有关联的属性
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId,
+                            @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getNoRelationAttr(params,attrgroupId);
+        return R.ok().put("page",page);
+    }
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelatinVo[] vos) {
+        attrService.deleteRelation(vos);
+        return R.ok();
+    }
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId) {
+        List<AttrEntity> entities = attrService.getRelationAttr(attrgroupId);
+        return R.ok().put("data",entities);
+    }
+
     /**
      * 列表
      */
