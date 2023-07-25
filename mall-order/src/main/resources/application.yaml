@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: mall-order
+  profiles:
+    active: dev
   datasource:
     #com.mysql.cj.jdbc.Driver是MySQL 8.0版本中的默认驱动程序类
     driver-class-name: com.mysql.cj.jdbc.Driver

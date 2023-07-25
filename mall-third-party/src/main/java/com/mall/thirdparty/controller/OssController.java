@@ -7,6 +7,7 @@ import com.aliyun.oss.model.PolicyConditions;
 import com.mall.common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +21,8 @@ import java.util.Map;
 /**
  * @author L
  */
+
+@RefreshScope
 @RestController
 public class OssController {
 
