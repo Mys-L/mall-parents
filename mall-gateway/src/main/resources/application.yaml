@@ -3,12 +3,13 @@ spring:
     gateway:
       routes:
 
-        - id: mall-third-party_route
-          uri: lb://mall-third-party
+
+        - id: member_route
+          uri: lb://mall-member
           predicates:
-            - Path=/api/third-party/**
+            - Path=/api/member/**
           filters:
-            - RewritePath=/api/third-party/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
 
         - id: product_route
           uri: lb://mall-product
@@ -16,6 +17,13 @@ spring:
             - Path=/api/product/**
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+        - id: mall-third-party_route
+          uri: lb://mall-third-party
+          predicates:
+            - Path=/api/third-party/**
+          filters:
+            - RewritePath=/api/third-party/(?<segment>.*), /$\{segment}
 
         - id: admin_route
           uri: lb://renren-fast

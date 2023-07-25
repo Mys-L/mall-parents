@@ -5,6 +5,8 @@ spring:
     name: mall-order
   profiles:
     active: dev
+  main: #springboot 2.6.0版本以上开始检查循环依赖 解决 配置如下 或者添加注解 @Lazy
+    allow-circular-references: true
   datasource:
     #com.mysql.cj.jdbc.Driver是MySQL 8.0版本中的默认驱动程序类
     driver-class-name: com.mysql.cj.jdbc.Driver
