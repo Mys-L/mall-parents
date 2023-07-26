@@ -18,9 +18,6 @@ public interface SpuImagesService extends IService<SpuImagesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    /**
-     *  SpuInfoServiceImpl 方法：saveSpuInfo-> 3 保存spu的图片集合 pms_spu_images
-     */
     void saveImages(Long id, List<String> images);
 }
 

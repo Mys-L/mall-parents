@@ -3,6 +3,7 @@ package com.mall.product;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  *  @author L
@@ -107,6 +108,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *          ->就会应用到当前RedisCacheManager管理的所有缓存分区中
  * @EnableTransactionManagement  对springboot项目，其实正常情况下是不需要在启动类上面加上@EnableTransactionManagement注解的
  */
+@EnableFeignClients(basePackages = "com.mall.product.feign")
 @EnableDiscoveryClient
 @SpringBootApplication
 public class MallProductApplication {

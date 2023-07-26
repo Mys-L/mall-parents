@@ -18,9 +18,6 @@ public interface ProductAttrValueService extends IService<ProductAttrValueEntity
 
     PageUtils queryPage(Map<String, Object> params);
 
-    /**
-     *  SpuInfoServiceImpl 方法：saveSpuInfo-> 保存spu的规格参数 同时需要操作另一张表:pms_product_attr_value
-     */
     void saveProductAttrValue(List<ProductAttrValueEntity> list);
 }
 
