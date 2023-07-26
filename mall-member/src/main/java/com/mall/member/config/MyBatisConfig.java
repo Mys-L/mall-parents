@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @ClassName: MyBatisConfig
- * @Description:
+ * @Description: 分页插件
  * @Author: L
  * @Create: 2023-07-24 15:46
  * @Version: 1.0

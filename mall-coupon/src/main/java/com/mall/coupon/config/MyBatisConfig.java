@@ -1,4 +1,4 @@
-package com.mall.product.config;
+package com.mall.coupon.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("com.mall.product.dao")
+@MapperScan("com.mall.coupon.dao")
 public class MyBatisConfig {
 
     /**
