@@ -1,21 +1,21 @@
 package com.mall.product.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.mall.common.utils.PageUtils;
+import com.mall.common.utils.R;
 import com.mall.product.entity.AttrEntity;
+import com.mall.product.entity.AttrGroupEntity;
 import com.mall.product.service.AttrAttrgroupRelationService;
+import com.mall.product.service.AttrGroupService;
 import com.mall.product.service.AttrService;
 import com.mall.product.service.CategoryService;
 import com.mall.product.vo.AttrGroupRelatinVo;
+import com.mall.product.vo.AttrGroupWithAttrsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.mall.product.entity.AttrGroupEntity;
-import com.mall.product.service.AttrGroupService;
-import com.mall.common.utils.PageUtils;
-import com.mall.common.utils.R;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -39,7 +39,13 @@ public class AttrGroupController {
     AttrAttrgroupRelationService relationService;
 
 
-
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId){
+        // 1.查询当前分类下的所有属性分组
+        List<AttrGroupWithAttrsVo> vos = attrGroupService.getAttrGroupWithAttrByCatelogId(catelogId);
+        // 2.查询每个分组的所有信息
+        return R.ok().put("data", vos);
+    }
     @PostMapping("/attr/relation")
     public R addRelation(@RequestBody List<AttrGroupRelatinVo> vos) {
         relationService.saveBatch(vos);

@@ -9,7 +9,6 @@ class MallThirdPartyApplicationTests {
 
 	@Test
 	void contextLoads() {
-
 	}
 
 }
