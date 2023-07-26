@@ -17,6 +17,7 @@ import com.mall.coupon.service.SkuLadderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,6 +45,7 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
     /**
      *  SpuInfoServiceImpl 方法：saveSpuInfo-> 6.4) 保存sku 的优惠满减等信息 跨数据库保存mall_sms 数据库->sms_sku_ladder(打折) sms_sku_full_reduction(满减) sms_member_price(会员价格)
      */
+    @Transactional
     @Override
     public void saveSkuReduction(SkuReductionTo skuReductionTo) {
         //1 保存满减打折,会员价格 sms_sku_ladder(打折)
@@ -61,7 +63,9 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
         //2 满减的信息 sms_sku_full_reduction(满减)
         SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
         BeanUtils.copyProperties(skuReductionTo, skuFullReductionEntity);
-        this.save(skuFullReductionEntity);
+        if (skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) == 1){
+            this.save(skuFullReductionEntity);
+        }
 
         //3 会员价格 sms_member_price(会员价格)
         List<MemberPrice> memberPrice = skuReductionTo.getMemberPrice();
@@ -73,10 +77,10 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
             priceEntity.setMemberPrice(m.getPrice());
             priceEntity.setAddOther(1);
             return priceEntity;
-        }).filter(item ->
-                // 输入的商品价格必须要大于0才保存
-                (item.getMemberPrice().compareTo(new BigDecimal("0")) > 0)
-        ).collect(Collectors.toList());
+        }).filter(item ->{
+            // 输入的商品价格必须要大于0才保存
+            return   item.getMemberPrice().compareTo(new BigDecimal("0")) ==1;
+        }).collect(Collectors.toList());
         memberPriceService.saveBatch(collect);
     }
 
