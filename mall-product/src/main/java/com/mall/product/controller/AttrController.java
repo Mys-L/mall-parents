@@ -1,17 +1,18 @@
 package com.mall.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.mall.common.utils.PageUtils;
+import com.mall.common.utils.R;
+import com.mall.product.entity.ProductAttrValueEntity;
+import com.mall.product.service.AttrService;
+import com.mall.product.service.ProductAttrValueService;
 import com.mall.product.vo.AttrRespVo;
 import com.mall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.mall.product.entity.AttrEntity;
-import com.mall.product.service.AttrService;
-import com.mall.common.utils.PageUtils;
-import com.mall.common.utils.R;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -27,7 +28,27 @@ import com.mall.common.utils.R;
 public class AttrController {
     @Autowired
     private AttrService attrService;
+    @Autowired
+    ProductAttrValueService productAttrValueService;
 
+
+    /**
+     * 更改规格参数：参数名、参数id、参数、状态的一一对应
+     */
+    @PostMapping("/update/{spuId}")
+    public R updateSpiAttr(@PathVariable("spuId") Long spuId, @RequestBody List<ProductAttrValueEntity> entities){
+        productAttrValueService.updateSpuAttr(spuId, entities);
+        return R.ok();
+    }
+
+    /**
+     * 查询属性规格
+     */
+    @GetMapping("/base/listforspu/{spuId}")
+    public R baseAttrListForSpu(@PathVariable("spuId") Long spuId){
+        List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrListForSpu(spuId);
+        return R.ok().put("data", entities);
+    }
 
     @GetMapping("/{attrType}/list/{catelogId}")
     public R baseAttrList(@RequestParam Map<String, Object> params,
@@ -69,7 +90,7 @@ public class AttrController {
     }
 
     /**
-     * 修改
+     * 更改规格参数：参数名、参数id、参数、状态的一一对应
      */
     @RequestMapping("/update")
     public R update(@RequestBody AttrVo attr){
