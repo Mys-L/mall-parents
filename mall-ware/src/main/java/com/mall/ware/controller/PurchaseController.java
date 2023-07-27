@@ -1,19 +1,18 @@
 package com.mall.ware.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.mall.ware.entity.PurchaseEntity;
-import com.mall.ware.service.PurchaseService;
 import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.R;
+import com.mall.ware.entity.PurchaseEntity;
+import com.mall.ware.service.PurchaseService;
+import com.mall.ware.vo.MergeVo;
+import com.mall.ware.vo.PurchaseDoneVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -29,6 +28,42 @@ import com.mall.common.utils.R;
 public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
+
+
+    /**
+     * 完成采购单
+     */
+    @PostMapping("/done")
+    public R finish(@RequestBody PurchaseDoneVo doneVo){
+        purchaseService.done(doneVo);
+        return R.ok();
+    }
+
+    /**
+     * 领取采购单。采购已经有了人员信息。这个请求需要通过post手动完成
+     */
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        purchaseService.received(ids);
+        return R.ok();
+    }
+
+    /**
+     * 合并采购需求
+     */
+    @PostMapping("/merge")
+    public R merge(@RequestBody MergeVo mergeVo){
+        purchaseService.mergePurchase(mergeVo);
+        return R.ok();
+    }
+    /**
+     * 新建或者未被领取的采购单
+     */
+    @RequestMapping("/unreceive/list")
+    public R unreceive(@RequestParam Map<String, Object> params){
+        PageUtils page = purchaseService.queryPageUnreceivePurchase(params);
+        return R.ok().put("page", page);
+    }
 
     /**
      * 列表
@@ -46,7 +81,7 @@ public class PurchaseController {
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
-		PurchaseEntity purchase = purchaseService.getById(id);
+        PurchaseEntity purchase = purchaseService.getById(id);
 
         return R.ok().put("purchase", purchase);
     }
@@ -56,7 +91,9 @@ public class PurchaseController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseEntity purchase){
-		purchaseService.save(purchase);
+        purchase.setCreateTime(new Date());
+        purchase.setUpdateTime(new Date());
+        purchaseService.save(purchase);
 
         return R.ok();
     }
@@ -66,7 +103,7 @@ public class PurchaseController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody PurchaseEntity purchase){
-		purchaseService.updateById(purchase);
+        purchaseService.updateById(purchase);
 
         return R.ok();
     }
@@ -76,7 +113,7 @@ public class PurchaseController {
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
-		purchaseService.removeByIds(Arrays.asList(ids));
+        purchaseService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

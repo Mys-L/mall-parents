@@ -1,25 +1,19 @@
 package com.mall.ware.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.mall.ware.entity.PurchaseDetailEntity;
-import com.mall.ware.service.PurchaseDetailService;
 import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.R;
+import com.mall.ware.entity.PurchaseDetailEntity;
+import com.mall.ware.service.PurchaseDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 
 /**
- * 
- *
+ * 采购需求
  * @author L
  * @email L@163.com
  * @date 2023-07-15 15:52:16
