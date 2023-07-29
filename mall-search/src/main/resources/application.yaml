@@ -1,0 +1,26 @@
+server:
+  port: 15000
+spring:
+  application:
+    name: mall-search
+  profiles:
+    active: dev
+  main: #springboot 2.6.0版本以上开始检查循环依赖 解决 配置如下 或者添加注解 @Lazy
+    allow-circular-references: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        #指定文件名，没有则默认${spring.application.name}
+        #指定文件后缀
+        file-extension: yaml
+        import-check:
+          enabled: false
+  jackson: #日期格式化
+    date-format: yyyy-MM-dd HH:mm:ss
+
+#elasticsearch 将两个参数提取为配置
+elasticsearch:
+  host-name: 192.168.10.100
+  port: 9200
