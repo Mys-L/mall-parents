@@ -27,7 +27,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <!--官方已经在7.15.0放弃对旧版本中的Java REST Client （High Level Rest Client (HLRC)）的支持，
-        从而替换为推荐使用的Java API Client 8.x-->
+        从而替换为推荐使用的Java API Client 8.x
+        api地址：https://juejin.cn/post/7147861385970450440
+        api地址：https://blog.csdn.net/b___w/article/details/123924063
+        api地址：https://www.jianshu.com/p/bf746aa59681
+        -->
         <!-- 参照官网 https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/8.6/installation.html -->
         <dependency>
             <groupId>co.elastic.clients</groupId>
