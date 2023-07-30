@@ -2,6 +2,8 @@ package com.mall.product.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName: AttrVO
  * @Description:
@@ -10,7 +12,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class AttrVo {
+public class AttrVo implements Serializable {
     /**
      * 属性id
      */

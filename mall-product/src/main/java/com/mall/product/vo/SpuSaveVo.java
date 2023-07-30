@@ -2,6 +2,7 @@ package com.mall.product.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class SpuSaveVo {
+public class SpuSaveVo implements Serializable {
 
 	private String spuName;
 	private String spuDescription;

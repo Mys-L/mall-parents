@@ -2,6 +2,8 @@ package com.mall.product.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName: BrandVo
  * @Description:
@@ -10,7 +12,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class BrandVo {
+public class BrandVo implements Serializable {
 
     private Long brandId;
     private String brandName;

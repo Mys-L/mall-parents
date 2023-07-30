@@ -3,6 +3,7 @@ package com.mall.ware.vo;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class PurchaseDoneVo {
+public class PurchaseDoneVo implements Serializable {
     /** 采购单id*/
     @NotNull
     private Long id;

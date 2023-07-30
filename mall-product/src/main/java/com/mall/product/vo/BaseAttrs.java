@@ -1,6 +1,9 @@
 package com.mall.product.vo;
 
 import lombok.Data;
+
+import java.io.Serializable;
+
 /**
  * <p>Title: BaseAttrs</p>
  * Description：
@@ -8,7 +11,7 @@ import lombok.Data;
  * @author L
  */
 @Data
-public class BaseAttrs {
+public class BaseAttrs implements Serializable {
 
     private Long attrId;
     private String attrValues;

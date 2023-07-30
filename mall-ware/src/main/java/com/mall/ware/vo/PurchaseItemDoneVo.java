@@ -2,6 +2,8 @@ package com.mall.ware.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName: PurchaseItemDoneVo
  * @Description: 采购项
@@ -10,7 +12,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class PurchaseItemDoneVo {
+public class PurchaseItemDoneVo implements Serializable {
     /**
      * "itemId":1,"status":3,"reason":"",
      * "itemId":3,"status":4,"reason":"无货"

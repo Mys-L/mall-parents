@@ -2,6 +2,8 @@ package com.mall.product.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName: AttrRespVo
  * @Description:
@@ -11,7 +13,7 @@ import lombok.Data;
  */
 
 @Data
-public class AttrRespVo extends AttrVo{
+public class AttrRespVo extends AttrVo implements Serializable {
     private String catelogName;
     private String groupName;
     private Long[] catelogPath;

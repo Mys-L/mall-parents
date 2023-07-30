@@ -2,6 +2,7 @@ package com.mall.common.to;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class SkuReductionTo {
+public class SkuReductionTo implements Serializable {
     private Long skuId;
     /***
      * fullCount、discount、countStatus  打折信息

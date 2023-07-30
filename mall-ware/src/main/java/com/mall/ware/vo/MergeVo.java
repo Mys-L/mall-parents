@@ -2,6 +2,7 @@ package com.mall.ware.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class MergeVo {
+public class MergeVo implements Serializable {
     /**
      * 采购单的ID
      */

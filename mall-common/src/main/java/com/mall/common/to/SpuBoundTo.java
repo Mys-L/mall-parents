@@ -2,6 +2,7 @@ package com.mall.common.to;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
  * @Version: 1.0
  */
 @Data
-public class SpuBoundTo {
+public class SpuBoundTo implements Serializable {
     private Long spuId;
     private BigDecimal buyBounds;
     private BigDecimal growBounds;

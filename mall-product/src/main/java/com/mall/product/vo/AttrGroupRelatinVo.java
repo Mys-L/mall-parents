@@ -1,6 +1,9 @@
 package com.mall.product.vo;
 
 import lombok.Data;
+
+import java.io.Serializable;
+
 /**
  * @ClassName: AttrGroupRelatinVo
  * @Description: 
@@ -9,7 +12,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class AttrGroupRelatinVo {
+public class AttrGroupRelatinVo implements Serializable {
     private Long attrId;
     private Long attrGroupId;
 }

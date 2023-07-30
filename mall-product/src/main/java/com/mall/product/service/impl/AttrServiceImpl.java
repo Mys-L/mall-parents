@@ -1,13 +1,21 @@
 package com.mall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mall.common.constant.Constant;
+import com.mall.common.utils.PageUtils;
+import com.mall.common.utils.Query;
 import com.mall.product.dao.AttrAttrgroupRelationDao;
+import com.mall.product.dao.AttrDao;
 import com.mall.product.dao.AttrGroupDao;
 import com.mall.product.dao.CategoryDao;
 import com.mall.product.entity.AttrAttrgroupRelationEntity;
+import com.mall.product.entity.AttrEntity;
 import com.mall.product.entity.AttrGroupEntity;
 import com.mall.product.entity.CategoryEntity;
+import com.mall.product.service.AttrService;
 import com.mall.product.service.CategoryService;
 import com.mall.product.vo.AttrGroupRelatinVo;
 import com.mall.product.vo.AttrRespVo;
@@ -16,22 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mall.common.utils.PageUtils;
-import com.mall.common.utils.Query;
-
-import com.mall.product.dao.AttrDao;
-import com.mall.product.entity.AttrEntity;
-import com.mall.product.service.AttrService;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("attrService")
@@ -230,6 +227,16 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), wrapper);
         PageUtils pageUtils = new PageUtils(page);
         return pageUtils;
+    }
+
+    /**
+     * 在指定的所有集合里面查找出检索属性
+     * @param attrIds
+     * @return
+     */
+    @Override
+    public List<Long> selectSearchAttrIds(List<Long> attrIds) {
+        return this.baseMapper.selectSearchAttrIds(attrIds);
     }
 
 }

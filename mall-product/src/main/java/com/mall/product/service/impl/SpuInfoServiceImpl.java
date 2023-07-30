@@ -1,16 +1,20 @@
 package com.mall.product.service.impl;
 
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mall.common.to.SkuReductionTo;
 import com.mall.common.to.SpuBoundTo;
+import com.mall.common.to.elasticsearch.SkuElasticModel;
+import com.mall.common.to.elasticsearch.SkuHasStockVo;
 import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.Query;
 import com.mall.common.utils.R;
 import com.mall.product.dao.SpuInfoDao;
 import com.mall.product.entity.*;
 import com.mall.product.feign.CouponFeignService;
+import com.mall.product.feign.WareFeignService;
 import com.mall.product.service.*;
 import com.mall.product.vo.*;
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service("spuInfoService")
@@ -44,7 +47,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     SkuSaleAttrValueService skuSaleAttrValueService;
     @Autowired
     CouponFeignService couponFeignService;
-
+    @Autowired
+    BrandService brandService;
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    WareFeignService wareFeignService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
@@ -203,6 +211,77 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 wrapper
         );
         return new PageUtils(page);
+    }
+
+
+    /**
+     * 商品上架
+     * 不一样的属性：skuPrice、skuImg、hasStock、hotScore、
+     * brandName、brandImg、catalogName、attrs
+     * spuId-> 商品和属性关联
+     * productAttrValue s -> attrIds -> attrs ->过滤 -> SkuEsModel.Attrs -> skuIds->
+     */
+    @Override
+    public void up(Long spuId) {
+        // 1 组装数据 查出当前spuId对应的所有sku信息
+        //1.1首先 查出sku信息
+        List<SkuInfoEntity> skuEntities= skuInfoService.getSkuBySpuId(spuId);
+        // 2.4 查出当前sku所有可以被用来检索规格属性
+        List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrListForSpu(spuId);
+        List<Long> attrIds = baseAttrs.stream().map(attr -> {
+            return attr.getAttrId();
+        }).toList();
+        // 过滤出可被检索的基本属性id，即search_type = 1，并且转化成elasticsearch模型
+        List<Long> searchAttrIds = attrService.selectSearchAttrIds(attrIds);
+        Set<Long> idSet = new HashSet<>(searchAttrIds);
+        List<SkuElasticModel.Attrs> attrsList = baseAttrs.stream().filter(item -> {
+            return idSet.contains(item.getAttrId());
+        }).map(item -> {
+            //组装数据
+            SkuElasticModel.Attrs attrs = new SkuElasticModel.Attrs();
+            BeanUtils.copyProperties(item, attrs);
+            return attrs;
+        }).toList();
+
+        // TODO 2.1 远程调用 查询是否库存
+        List<Long> skuIds = skuEntities.stream().map(SkuInfoEntity::getSkuId).toList();
+        Map<Long, Boolean> isHasStock=new HashMap<>();
+        try {
+            R skuHasStock = wareFeignService.getSkuHasStock(skuIds);
+            isHasStock = skuHasStock.getData(new TypeReference<List<SkuHasStockVo>>() {
+            }).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
+            log.debug("服务调用成功!" + isHasStock);
+        }catch (Exception e) {
+            log.error("库存服务调用失败: 原因{}", e);
+        }
+        Map<Long, Boolean> finalCollect = isHasStock;
+        // 2 封装上架sku信息
+        List<SkuElasticModel> upProduct = skuEntities.stream().map(sku -> {
+            SkuElasticModel skuElasticModel = new SkuElasticModel();
+            //拷贝相同信息
+            BeanUtils.copyProperties(sku, skuElasticModel);
+            //设置不同信息
+            skuElasticModel.setSkuPrice(sku.getPrice());
+            skuElasticModel.setSkuImg(sku.getSkuDefaultImg());
+            //设置库存，只查是否有库存，不查有多少(2.1 远程调用)
+            if (null == finalCollect) {
+                skuElasticModel.setHasStock(true);
+            } else {
+                skuElasticModel.setHasStock(finalCollect.get(sku.getSkuId()));
+            }
+            // 2.2 热度评分 默认0
+            skuElasticModel.setHotScore(0L);
+            // 2.3 查询品牌和分类名字
+            BrandEntity brandEntity = brandService.getById(skuElasticModel.getBrandId());
+            skuElasticModel.setBrandName(brandEntity.getName());
+            skuElasticModel.setBrandImg(brandEntity.getLogo());
+            CategoryEntity categoryEntity = categoryService.getById(skuElasticModel.getCatalogId());
+            skuElasticModel.setCatalogName(categoryEntity.getName());
+            skuElasticModel.setAttrs(attrsList);
+            return skuElasticModel;
+        }).toList();
+        // TODO 3 最终发给elasticsearch进行保存 mall-search
+
     }
 
 }
