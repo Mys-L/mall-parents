@@ -1,5 +1,8 @@
 server:
   port: 10000
+  #配置项目
+#  servlet:
+#    context-path:
 spring:
   application:
     name: mall-coupon
