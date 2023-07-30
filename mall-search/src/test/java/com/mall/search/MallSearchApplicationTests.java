@@ -74,8 +74,8 @@ class MallSearchApplicationTests {
     }
 
     /**
-     * TODO 类似api实例
-     * https://blog.csdn.net/u013979493/article/details/123172320
+     * TODO 官网api
+     *https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/indexing-bulk.html
      */
     @Test
    public void addIndexData() throws IOException {
@@ -83,6 +83,7 @@ class MallSearchApplicationTests {
          * Elasticsearch8.x版本中RestHighLevelClient被弃用，新版本中全新的Java客户端Elasticsearch Java API Client中常用API练习
          * https://www.jianshu.com/p/bf746aa59681
          * https://blog.csdn.net/b___w/article/details/123924063
+         * https://blog.csdn.net/u013979493/article/details/123172320
          * 新版本可以直接传java对象
          * 新建document
          */

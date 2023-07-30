@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mall.common.constant.Constant;
 import com.mall.common.to.SkuReductionTo;
 import com.mall.common.to.SpuBoundTo;
 import com.mall.common.to.elasticsearch.SkuElasticModel;
@@ -14,6 +15,7 @@ import com.mall.common.utils.R;
 import com.mall.product.dao.SpuInfoDao;
 import com.mall.product.entity.*;
 import com.mall.product.feign.CouponFeignService;
+import com.mall.product.feign.ElasticSearchFeignService;
 import com.mall.product.feign.WareFeignService;
 import com.mall.product.service.*;
 import com.mall.product.vo.*;
@@ -53,6 +55,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     CategoryService categoryService;
     @Autowired
     WareFeignService wareFeignService;
+    @Autowired
+    ElasticSearchFeignService searchFeignService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
@@ -248,8 +253,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         Map<Long, Boolean> isHasStock=new HashMap<>();
         try {
             R skuHasStock = wareFeignService.getSkuHasStock(skuIds);
-            isHasStock = skuHasStock.getData(new TypeReference<List<SkuHasStockVo>>() {
-            }).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
+            isHasStock = skuHasStock.getData(new TypeReference<List<SkuHasStockVo>>() {})
+                    .stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
             log.debug("服务调用成功!" + isHasStock);
         }catch (Exception e) {
             log.error("库存服务调用失败: 原因{}", e);
@@ -281,7 +286,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return skuElasticModel;
         }).toList();
         // TODO 3 最终发给elasticsearch进行保存 mall-search
-
+        R r = searchFeignService.productStatusUp(upProduct);
+        if (r.getCode()==0){
+            //远程调用成功 成功之后修改当前商品sku状态
+            this.baseMapper.updateSpuStatus(spuId,Constant.StatusEnum.SPU_UP.getCode());
+        }else {
+            //远程调用失败
+            // TODO 存在问题 接口幂等性,重复调用等问题
+        }
     }
 
 }
