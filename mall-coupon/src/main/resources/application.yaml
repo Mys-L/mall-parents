@@ -46,12 +46,15 @@ spring:
 #        group: DEFAULT_GROUP
         server-addr: 127.0.0.1:8848
         file-extension: yaml
-  config:
-    import: # nacos 作为配置中心新版本配置
+        import-check:
+          enabled: false
+#  config:
+#    import: # nacos 作为配置中心新版本配置
 #      - optional:nacos:test.yml  # 监听 DEFAULT_GROUP:test.yml
 #      - optional:nacos:test01.yml?group=group_01 # 覆盖默认 group，监听 group_01:test01.yml
 #      - optional:nacos:test02.yml?group=group_02&refreshEnabled=false # 不开启动态刷新
-      - nacos:nacos-config.yaml #nacos-config.yaml或者 nacos-config.properties
+#      - nacos:nacos-config.yaml #nacos-config.yaml或者 nacos-config.properties
+
   jackson: #日期格式化
     date-format: yyyy-MM-dd yyyy-MM-dd HH:mm:ss
 

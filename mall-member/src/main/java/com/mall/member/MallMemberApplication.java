@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 	2.2 要调用coupon服务的/coupon/coupon/member/list方法
  * 3 开启远程调用功能 @EnableFeignClients，要指定远程调用功能放的基础包
  *
- * */
+ */
 @EnableFeignClients("com.mall.member.feign")
 @EnableDiscoveryClient
 @SpringBootApplication
