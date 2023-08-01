@@ -29,7 +29,6 @@ public class indexController {
     public String indexPage(Model model){
         List<CategoryEntity> entities =categoryService.getLevel1Categorys();
         model.addAttribute("categories",entities);
-        System.out.println(entities);
         return "index";
     }
 

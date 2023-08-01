@@ -31,10 +31,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<CategoryEntity> page = this.page(
-                new Query<CategoryEntity>().getPage(params),
-                new QueryWrapper<CategoryEntity>()
-        );
+        IPage<CategoryEntity> page = this.page(new Query<CategoryEntity>().getPage(params), new QueryWrapper<CategoryEntity>());
 
         return new PageUtils(page);
     }
@@ -111,34 +108,34 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 查询导航所有一级分类
-     *
-     * @return
      */
     @Override
     public List<CategoryEntity> getLevel1Categorys() {
-        return this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+        long l = System.currentTimeMillis();
+        List<CategoryEntity> list = this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+        System.out.println("消耗时间 = " + (System.currentTimeMillis() - l));
+        return list;
     }
-
 
     /**
      * 查询所有分类菜单
-     *
-     * @return
      */
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        //业务优化 将多次查询数据变成一次
+        List<CategoryEntity> selectAllList = this.baseMapper.selectList(null);
         //查出所有一级分类
-        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        List<CategoryEntity> level1Categorys = getParentCid(selectAllList, 0L);
         Map<String, List<Catelog2Vo>> parent_cid = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-            List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            List<CategoryEntity> categoryEntities = getParentCid(selectAllList, v.getCatId());
             List<Catelog2Vo> catelog2Vos = new ArrayList<>();
             if (categoryEntities != null) {
                 catelog2Vos = categoryEntities.stream().map(l2 -> {
                     Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
-                    List<CategoryEntity> level3Catelog = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                    List<CategoryEntity> level3Catelog = getParentCid(selectAllList, l2.getCatId());
                     if (level3Catelog != null) {
                         List<Catelog2Vo.Category3Vo> voList = level3Catelog.stream().map(l3 -> {
-                            Catelog2Vo.Category3Vo category3Vo = new Catelog2Vo.Category3Vo(l2.getCatId().toString(),l3.getCatId().toString(),l3.getName());
+                            Catelog2Vo.Category3Vo category3Vo = new Catelog2Vo.Category3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
                             return category3Vo;
                         }).toList();
                         catelog2Vo.setCatalog3List(voList);
@@ -149,6 +146,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return catelog2Vos;
         }));
         return parent_cid;
+    }
+    private List<CategoryEntity> getParentCid(List<CategoryEntity> selectAllList, Long parentCid) {
+        //return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+        List<CategoryEntity> list = selectAllList.stream().filter(item -> item.getParentCid() == parentCid).toList();
+        return list;
     }
 
 }
