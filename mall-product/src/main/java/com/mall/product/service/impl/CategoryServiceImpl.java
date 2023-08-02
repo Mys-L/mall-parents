@@ -1,5 +1,7 @@
 package com.mall.product.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,14 +12,17 @@ import com.mall.product.entity.CategoryEntity;
 import com.mall.product.service.CategoryBrandRelationService;
 import com.mall.product.service.CategoryService;
 import com.mall.product.vo.Catelog2Vo;
+import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -28,6 +33,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     //CategoryDao categoryDao
     @Autowired
     CategoryBrandRelationService categoryBrandRelationService;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @Autowired
+    RedissonClient redisson;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -113,18 +122,104 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public List<CategoryEntity> getLevel1Categorys() {
         long l = System.currentTimeMillis();
         List<CategoryEntity> list = this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
-        System.out.println("消耗时间 = " + (System.currentTimeMillis() - l));
+        System.out.println("消耗时间 ============> " + (System.currentTimeMillis() - l));
         return list;
     }
 
     /**
-     * 查询所有分类菜单
+     * 加入缓存逻辑
+     * 缓存穿透，雪崩，击穿等问题
+     * 加锁 缓存击穿：synchronized ()
      */
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
-        //业务优化 将多次查询数据变成一次
+        //加入缓存
+        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        if (StringUtils.isEmpty(catalogJson)) {
+            Map<String, List<Catelog2Vo>> catalogJsonFromDB = getCatalogJsonFromDBWithRedissonLock();
+            return catalogJsonFromDB;
+        }
+        Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
+        return result;
+    }
+
+    /**
+     * redisson 分布式锁 是redis的升级
+     * 缓存里面的数据如何和数据库保持一致
+     * 缓存一致性问题：
+     *      双写模式 ->会有脏数据的问题,解决 1加锁 2允不允许暂时有脏数据
+     *      失效模式 ->也会有这样问题
+     */
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDBWithRedissonLock() {
+        //锁的名字
+        RLock redissonLock = redisson.getLock("catalogJson-lock");
+        Map<String, List<Catelog2Vo>> dataFromDB = new HashMap<>();
+        redissonLock.lock();
+        try {
+            dataFromDB = getDataFromDB();
+        } finally {
+            redissonLock.unlock();
+        }
+
+        return dataFromDB;
+    }
+
+    /**
+     * redis 分布式 简单逻辑
+     * 存在问题：如果在查询数据库时，出现异常。导致没有删除锁的问题=导致死锁
+     * 解决：添加过期时间(只加过期时间也不行) 需要加锁和过期时间必须原子性
+     * 问题2 ： 删除锁的时候必须删除自己的锁，不能删除别人的锁 查询和删除必须原子操作
+     */
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDBWithRedisLock() {
+        //抢占redis分布式锁，去redis占位
+        String uuid = UUID.randomUUID().toString();
+        Boolean addLock = redisTemplate.opsForValue().setIfAbsent("lock", uuid, 300, TimeUnit.SECONDS);
+        if (addLock) {
+            Map<String, List<Catelog2Vo>> dataFromDB = null;
+            try {
+                //加锁成功 执行业务
+                dataFromDB = getDataFromDB();
+            } finally {
+                //获取值对比+对比成功删除=原子操作  lua脚本解锁
+                String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+                //删除锁
+                Long delLock = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
+            }
+            return dataFromDB;
+        } else {
+            //加锁失败   重试=自旋
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+                log.error("redis 锁:自旋等待加锁时出现异常，原因:" + e.getMessage());
+            }
+            return getCatalogJsonFromDBWithRedisLock();
+        }
+    }
+
+    /**
+     * 查询所有分类菜单 加入缓存优化 重新提取方法
+     * 从数据库查询并封装数据
+     * 本地锁  synchronized
+     */
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDBWithLocalLock() {
+        //当前实例容器，单体应用没有问题，分布式需要多台服务器
+        synchronized (this) {
+            return getDataFromDB();
+        }
+    }
+
+    private Map<String, List<Catelog2Vo>> getDataFromDB() {
+        String catalogJson = redisTemplate.opsForValue().get("catalogJson");
+        if (!StringUtils.isEmpty(catalogJson)) {
+            System.out.println("================缓存命中无需查询数据库================");
+            Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+            });
+            return result;
+        }
+        System.out.println("================查询了数据库================");
         List<CategoryEntity> selectAllList = this.baseMapper.selectList(null);
-        //查出所有一级分类
         List<CategoryEntity> level1Categorys = getParentCid(selectAllList, 0L);
         Map<String, List<Catelog2Vo>> parent_cid = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
             List<CategoryEntity> categoryEntities = getParentCid(selectAllList, v.getCatId());
@@ -145,8 +240,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             }
             return catelog2Vos;
         }));
+        redisTemplate.opsForValue().set("catalogJson", JSON.toJSONString(parent_cid), 1, TimeUnit.DAYS);
         return parent_cid;
     }
+
     private List<CategoryEntity> getParentCid(List<CategoryEntity> selectAllList, Long parentCid) {
         //return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
         List<CategoryEntity> list = selectAllList.stream().filter(item -> item.getParentCid() == parentCid).toList();
