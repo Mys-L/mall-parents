@@ -69,7 +69,6 @@ spring:
   #配置SpringCache
   cache:
     type: redis
-    #cache-names:
     redis:
       time-to-live: 3600000  #默认存活时间
       cache-null-values: true  #是否缓存空值，防止缓存穿透
