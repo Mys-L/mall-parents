@@ -5,6 +5,7 @@ import com.mall.common.to.elasticsearch.SkuElasticModel;
 import com.mall.common.utils.R;
 import com.mall.search.service.ElasticSearchSaveService;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,9 @@ import java.util.List;
 @RequestMapping("/search/save")
 @RestController
 public class ElasticSearchSaveController {
+
+    @Autowired
+    RestHighLevelClient client;
     @Autowired
     private ElasticSearchSaveService elasticSaveService;
 

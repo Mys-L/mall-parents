@@ -11,7 +11,7 @@ public class ElasticSearchConstant {
     /**
      * sku数据在ES中的索引
      */
-    public static final String PRODUCT_ES_INDEX = "product";
+    public static final String PRODUCT_ES_INDEX = "mall_product";
 
     /**
      * 分页的大小
