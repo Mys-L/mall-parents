@@ -84,3 +84,10 @@ mybatis-plus:
       logic-not-delete-value: 0
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#线程池配置 MyThreadConfig ThreadPoolConfigProperties
+mall:
+  thread:
+    core-size: 10
+    max-size: 100
+    keep-alive-time: 10

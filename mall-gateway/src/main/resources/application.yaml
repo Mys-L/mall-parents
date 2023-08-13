@@ -47,4 +47,4 @@ spring:
         - id: mall-host_route
           uri: lb://mall-product
           predicates:
-            - Host=mall.com
+            - Host=mall.com,item.mall.com

@@ -46,7 +46,12 @@
 <!--            <artifactId>spring-boot-starter-validation</artifactId>-->
 <!--        </dependency>-->
 
-
+        <!--生成自定义配置的元数据信息-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
