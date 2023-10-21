@@ -3,7 +3,6 @@ spring:
     gateway:
       routes:
 
-
         - id: ware_route
           uri: lb://mall-ware
           predicates:
@@ -43,6 +42,11 @@ spring:
           uri: lb://mall-search
           predicates:
             - Host=search.mall.com
+
+        - id: mall-auth_route
+          uri: lb://mall-auth-server
+          predicates:
+            - Host=auth.mall.com
 
         - id: mall-host_route
           uri: lb://mall-product

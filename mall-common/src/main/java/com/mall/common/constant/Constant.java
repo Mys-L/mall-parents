@@ -103,5 +103,11 @@ public class Constant {
             return msg;
         }
     }
+    /*-------------------------------------------------------------------------------------------------*/
 
+    /*------------------mall-auth-server 授权系统有关的常量------------------------------------------------------------------------*/
+    public static final String SMS_CODE_CACHE_PREFIX = "sms:code:";
+    public static final String LOGIN_USER = "loginUser";
+    public static final String NOT_LOGIN = "请先进行登录";
+    public static final String SESSION = "GULISESSION";
 }

@@ -30,6 +30,7 @@
 		<module>mall-ware</module>
 		<module>mall-third-party</module>
 		<module>mall-search</module>
+		<module>mall-auth-server</module>
 		<module>renren-fast</module>
 		<module>renren-generator</module>
 	</modules>

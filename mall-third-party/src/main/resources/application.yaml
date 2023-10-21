@@ -18,7 +18,6 @@ spring:
         #指定文件后缀
         namespace: 818a32e9-8bc7-44cf-ba21-1c1df7054c7c #命名空间
         group: DEFAULT_GROUP  #默认组
-
         file-extension: yaml  #DataId的后缀
 #        refresh-enabled: true  #是否开启监听和自动刷新默认值true(可以不配置) 如果在这配置了false 下面配置和@RefreshScope不生效
 #        import-check:  如果不使用 spring.config.import 设置(如下) spring.cloud.nacos.config.import-check.enabled=false 关闭
@@ -29,6 +28,7 @@ spring:
       - optional:nacos:application.yaml  # 监听 默认组DEFAULT_GROUP :application.yaml
       - optional:nacos:nacos-discovery.yaml?group=DEFAULT_GROUP  # 覆盖并监听新的组:nacos-discovery.yaml
       - optional:nacos:oss.yaml?group=DEFAULT_GROUP&refreshEnabled=true  # refreshEnabled默认是false 动态刷新
+      - optional:nacos:sms.yaml?group=DEFAULT_GROUP&refreshEnabled=true  # refreshEnabled默认是false 动态刷新
 
 #https://github.com/alibaba/spring-cloud-alibaba/blob/2.2.x/spring-cloud-alibaba-examples/nacos-example/nacos-config-example/readme-zh.md
 
@@ -40,3 +40,12 @@ spring:
 #      secret-key: X1Tr2Zd2vgYn8DoZHpc3FD5yA9bQzgi
 #    util:
 #      enabled: false #重复注入问题
+
+
+#    alicloud:
+#      sms:
+#        host: https://gyytz.market.alicloudapi.com
+#        path: /sms/smsSend
+#        appcode: bf6e59ceccf040a2aab0ff60859bf94e
+#        smsSignId: 2e65b1bb3d054466b82f0c9d125465e2
+#        templateId: 305b8db49cdb4b18964ffe255188cb20

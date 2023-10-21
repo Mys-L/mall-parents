@@ -1,0 +1,50 @@
+server:
+  port: 16000
+  #配置项目
+#  servlet:
+#    context-path:
+spring:
+  application:
+    name: mall-auth-server
+  profiles:
+    active: dev
+  main: #springboot 2.6.0版本以上开始检查循环依赖 解决 配置如下 或者添加注解 @Lazy
+    allow-circular-references: true
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        #指定文件名，没有则默认${spring.application.name}
+        #指定文件后缀
+        file-extension: yaml
+        import-check:
+          enabled: false
+  jackson: #日期格式化
+    date-format: yyyy-MM-dd HH:mm:ss
+  #thymeleaf 配置
+  thymeleaf:
+    cache: false
+  #redis 配置
+  redis:
+    host: 192.168.10.100
+    port: 6379
+    password:     # 密码(默认为空)
+    database: 0   #数据库索引 默认为0
+    timeout: 60000  # 连接超时时间(毫秒)
+    lettuce:
+      pool:    # 连接池配置
+        enabled: true
+        max-active: 8  # 连接池最大连接数(使用负值表示没有限制)
+        max-wait: -1   # 连接池最大阻塞等待时间(使用负值表示没有限制)
+        max-idle: 8    # 连接池中的最大空闲连接
+        min-idle: 0    # 连接池中的最小空闲连接
+  #配置SpringCache
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  #默认存活时间
+      cache-null-values: true  #是否缓存空值，防止缓存穿透
+      use-key-prefix: true  #是否使用 默认true
+      #key-prefix: CACHE_  配置会指定缓存前缀

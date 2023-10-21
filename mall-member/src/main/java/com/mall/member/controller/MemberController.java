@@ -1,10 +1,14 @@
 package com.mall.member.controller;
 
+import com.mall.common.exception.BizCodeEnum;
 import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.R;
 import com.mall.member.entity.MemberEntity;
+import com.mall.member.exception.PhoneExistException;
+import com.mall.member.exception.UserNameExistException;
 import com.mall.member.feign.CouponFeignService;
 import com.mall.member.service.MemberService;
+import com.mall.member.vo.MemberRegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +33,8 @@ public class MemberController {
     @Autowired
     CouponFeignService couponFeignService;
 
+
+
     @RequestMapping("/coupons")
     public R test(){
         MemberEntity memberEntity = new MemberEntity();
@@ -36,6 +42,21 @@ public class MemberController {
         R membercoupons = couponFeignService.membercoupons();//假设张三去数据库查了后返回了张三的优惠券信息
         //打印会员和优惠券信息
         return R.ok().put("member",memberEntity).put("coupons",membercoupons.get("coupons"));
+    }
+
+    /**
+     * 用户注册
+     */
+    @PostMapping("/register")
+    public R register(@RequestBody MemberRegisterVo registerVo){
+        try {
+            memberService.register(registerVo);
+        } catch (PhoneExistException e) {
+            return R.error(BizCodeEnum.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnum.PHONE_EXIST_EXCEPTION.getMsg());
+        } catch (UserNameExistException e) {
+            return R.error(BizCodeEnum.USER_EXIST_EXCEPTION.getCode(), BizCodeEnum.USER_EXIST_EXCEPTION.getMsg());
+        }
+        return R.ok();
     }
 
     /**
