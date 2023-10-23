@@ -29,7 +29,7 @@ public class MyMallWebConfig implements WebMvcConfigurer {
          * registry.addViewController("/login.html").setViewName("login");
          */
         //只是get请求能映射
-        registry.addViewController("/login.html").setViewName("login");
+//        registry.addViewController("/login.html").setViewName("login");
         registry.addViewController("/reg.html").setViewName("reg");
     }
 }

@@ -8,6 +8,7 @@ import com.mall.member.exception.PhoneExistException;
 import com.mall.member.exception.UserNameExistException;
 import com.mall.member.feign.CouponFeignService;
 import com.mall.member.service.MemberService;
+import com.mall.member.vo.MemberLoginVo;
 import com.mall.member.vo.MemberRegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,18 @@ public class MemberController {
         return R.ok().put("member",memberEntity).put("coupons",membercoupons.get("coupons"));
     }
 
+    /**
+     * 用户登录
+     */
+    @PostMapping("/login")
+    public R login(@RequestBody MemberLoginVo vo){
+        MemberEntity memberEntity = memberService.login(vo);
+        if(memberEntity != null){
+            return R.ok().setData(memberEntity);
+        }else {
+            return R.error(BizCodeEnum.LOGINACTT_PASSWORD_ERROR.getCode(), BizCodeEnum.LOGINACTT_PASSWORD_ERROR.getMsg());
+        }
+    }
     /**
      * 用户注册
      */

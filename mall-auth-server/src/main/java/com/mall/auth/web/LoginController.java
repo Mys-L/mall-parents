@@ -3,10 +3,12 @@ package com.mall.auth.web;
 import com.alibaba.fastjson2.TypeReference;
 import com.mall.auth.feign.MemberFeignService;
 import com.mall.auth.feign.ThirdPartFeignService;
+import com.mall.auth.vo.UserLoginVo;
 import com.mall.auth.vo.UserRegisterVo;
 import com.mall.common.constant.Constant;
 import com.mall.common.exception.BizCodeEnum;
 import com.mall.common.utils.R;
+import com.mall.common.vo.MemberRespVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +47,52 @@ public class LoginController {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private MemberFeignService memberFeignService;
+
+    @GetMapping({"/login.html","/","/index","/index.html"}) // auth
+    public String loginPage(HttpSession session){
+        // 从会话从获取loginUser
+        Object attribute = session.getAttribute(Constant.LOGIN_USER);// "loginUser";
+        System.out.println("attribute:"+attribute);
+        if(attribute == null){
+            return "login";
+        }
+        System.out.println("已登陆过，重定向到首页");
+        return "redirect:http://mall.com";
+    }
+
+    /**
+     * 用户登录请求
+     */
+    @PostMapping("/login")
+    public String login(UserLoginVo userLoginVo, // from表单里带过来的
+                        RedirectAttributes redirectAttributes,
+                        HttpSession session){
+        // 远程登录
+        R r = memberFeignService.login(userLoginVo);
+        if(r.getCode() == 0){
+            // 登录成功
+            MemberRespVo respVo = r.getData("data", new TypeReference<MemberRespVo>() {});
+            // 放入session
+            session.setAttribute(Constant.LOGIN_USER, respVo);//loginUser
+            log.info("\n欢迎 [" + respVo.getUsername() + "] 登录");
+            return "redirect:http://mall.com";
+        }else {
+            HashMap<String, String> error = new HashMap<>();
+            // 获取错误信息
+            error.put("msg", r.getData("msg",new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors", error);
+            return "redirect:http://auth.mall.com/login.html";
+        }
+    }
+    /**
+     * 社交登录
+     */
+
+    /**
+     * 发送验证码
+     * @param phone
+     * @return
+     */
     @ResponseBody
     @GetMapping("/sms/sendcode")
     public R sendCode(@RequestParam("phone") String phone) {
@@ -120,4 +169,6 @@ public class LoginController {
             return "redirect:http://auth.mall.com/reg.html";
         }
     }
+
+
 }
