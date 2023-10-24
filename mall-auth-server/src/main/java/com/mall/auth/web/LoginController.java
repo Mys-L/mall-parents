@@ -84,9 +84,6 @@ public class LoginController {
             return "redirect:http://auth.mall.com/login.html";
         }
     }
-    /**
-     * 社交登录
-     */
 
     /**
      * 发送验证码

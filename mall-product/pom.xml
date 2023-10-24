@@ -79,7 +79,10 @@
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
 
-		<!--生成自定义配置的元数据信息-->
+		<!--生成自定义配置的元数据信息
+		spring-boot-configuration-processor的作用就是将自己的配置你自己创建的配置类生成元数据信息，这样就能在你自己的配置文件中显示出来非常的方便。
+		（主要就是很多功能通过依赖导入进你的项目，你可以在配置文件中清除的看到可以配置的属性等）
+		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>

@@ -10,6 +10,7 @@ import com.mall.member.feign.CouponFeignService;
 import com.mall.member.service.MemberService;
 import com.mall.member.vo.MemberLoginVo;
 import com.mall.member.vo.MemberRegisterVo;
+import com.mall.member.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,18 @@ public class MemberController {
         return R.ok().put("member",memberEntity).put("coupons",membercoupons.get("coupons"));
     }
 
+    /**
+     * 社交用户登录
+     */
+    @PostMapping("/oauth2/login")
+    public R login(@RequestBody SocialUser socialUser){
+        MemberEntity memberEntity = memberService.login(socialUser);
+        if(memberEntity != null){
+            return R.ok().setData(memberEntity);
+        }else {
+            return R.error(BizCodeEnum.SOCIALUSER_LOGIN_ERROR.getCode(), BizCodeEnum.SOCIALUSER_LOGIN_ERROR.getMsg());
+        }
+    }
     /**
      * 用户登录
      */
