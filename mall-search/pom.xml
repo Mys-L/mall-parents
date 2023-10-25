@@ -40,6 +40,22 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
+        <!--引入redis lettuce堆外内存溢出 springboot2.3.2已解决-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- 引入redis连接池的依赖 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.11.1</version>
+        </dependency>
+        <!--整合spring session 解决session统一存储；完成session共享问题-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
 
         <!--官方已经在7.15.0放弃对旧版本中的Java REST Client （High Level Rest Client (HLRC)）的支持，
         从而替换为推荐使用的Java API Client 8.x

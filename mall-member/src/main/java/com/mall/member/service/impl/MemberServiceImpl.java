@@ -58,14 +58,15 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         checkUserName(registerVo.getUserName());
         entity.setMobile(registerVo.getPhone());
         entity.setUsername(registerVo.getUserName());
+
         // 密码要加密存储
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         entity.setPassword(bCryptPasswordEncoder.encode(registerVo.getPassword()));
+        entity.setNickname(registerVo.getUserName());
         // 其他的默认信息
         entity.setCity("北京");
         entity.setCreateTime(new Date());
         entity.setStatus(0);
-        entity.setNickname(registerVo.getUserName());
         entity.setBirth(new Date());
         entity.setEmail("L@mail.com");
         entity.setGender(1);

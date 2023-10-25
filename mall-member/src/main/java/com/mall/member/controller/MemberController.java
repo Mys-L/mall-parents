@@ -50,7 +50,7 @@ public class MemberController {
      * 社交用户登录
      */
     @PostMapping("/oauth2/login")
-    public R login(@RequestBody SocialUser socialUser){
+    public R oauthLogin(@RequestBody SocialUser socialUser){
         MemberEntity memberEntity = memberService.login(socialUser);
         if(memberEntity != null){
             return R.ok().setData(memberEntity);

@@ -48,6 +48,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+		<!--整合spring session 解决session统一存储；完成session共享问题-->
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-data-redis</artifactId>
+		</dependency>
 		<!-- 引入redis连接池的依赖 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

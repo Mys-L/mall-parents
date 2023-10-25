@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  *  @author L
@@ -108,6 +109,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *          ->就会应用到当前RedisCacheManager管理的所有缓存分区中
  * @EnableTransactionManagement  对springboot项目，其实正常情况下是不需要在启动类上面加上@EnableTransactionManagement注解的
  */
+
+@EnableRedisHttpSession //整合redis作为session的存储
 @EnableFeignClients(basePackages = "com.mall.product.feign")
 @EnableDiscoveryClient
 @SpringBootApplication

@@ -25,5 +25,5 @@ public interface MemberFeignService {
     R login(@RequestBody UserLoginVo vo);
 
     @PostMapping("/member/member/oauth2/login")
-    R login(@RequestBody SocialUser socialUser);
+    R oauthLogin(@RequestBody SocialUser socialUser);
 }

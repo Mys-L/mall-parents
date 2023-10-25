@@ -48,6 +48,10 @@ public class LoginController {
     @Autowired
     private MemberFeignService memberFeignService;
 
+    /**
+     * 网页登录 去掉MyMallWebConfig 配置
+     *
+     */
     @GetMapping({"/login.html","/","/index","/index.html"}) // auth
     public String loginPage(HttpSession session){
         // 从会话从获取loginUser

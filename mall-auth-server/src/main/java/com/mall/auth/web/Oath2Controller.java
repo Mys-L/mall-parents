@@ -40,9 +40,7 @@ public class Oath2Controller {
     @GetMapping("/logout")
     public String login(HttpSession session){
         if(session.getAttribute(Constant.LOGIN_USER) != null){
-            log.info("\n[" +
-                    ((MemberRespVo)session.getAttribute(Constant.LOGIN_USER)).getUsername()
-                    + "] 已下线");
+            log.info("\n[" + ((MemberRespVo)session.getAttribute(Constant.LOGIN_USER)).getUsername() + "] 已下线");
         }
         session.invalidate();
         return "redirect:http://auth.mall.com/login.html";
@@ -62,24 +60,25 @@ public class Oath2Controller {
     @GetMapping("/weibo/success") // Oath2Controller
     public String weiBo(@RequestParam("code") String code, HttpSession session, HttpServletResponse servletResponse) throws Exception {
         // 根据code换取 Access Token
+        Map<String,String> header = new HashMap<>();
+        Map<String,String> query = new HashMap<>();
         Map<String,String> map = new HashMap<>();
-        map.put("client_id", "1294828100");
-        map.put("client_secret", "a8e8900e15fba6077591cdfa3105af44");
-        map.put("grant_type", "authorization_code");
-        map.put("redirect_uri", "http://auth.mall.com/oauth2.0/weibo/success");
-        map.put("code", code);
-        Map<String, String> headers = new HashMap<>();
-
-        // 去获取token
+        map.put("client_id","2636917288");
+        map.put("client_secret","6a263e9284c6c1a74a62eadacc11b6e2");
+        map.put("grant_type","authorization_code");
+        map.put("redirect_uri","http://auth.mall.com/oauth2.0/weibo/success");
+        map.put("code",code);
+        //1、根据code换取accessToken；
         HttpResponse response = HttpUtils.doPost("https://api.weibo.com",
-                "/oauth2/access_token", "post", headers, null, map);
+                "/oauth2/access_token", "post", header, query, map);
+        //2、处理
         if(response.getStatusLine().getStatusCode() == 200){
             // 获取响应体： Access Token
             String json = EntityUtils.toString(response.getEntity());
             SocialUser socialUser = JSON.parseObject(json, SocialUser.class);
             // 相当于我们知道了当前是那个用户
             // 1.如果用户是第一次进来 自动注册进来(为当前社交用户生成一个会员信息 以后这个账户就会关联这个账号)
-            R login = memberFeignService.login(socialUser);
+            R login = memberFeignService.oauthLogin(socialUser);
             if(login.getCode() == 0){
                 MemberRespVo respVo = login.getData("data" ,new TypeReference<MemberRespVo>() {});
                 log.info("\n欢迎 [" + respVo.getUsername() + "] 使用社交账号登录");
