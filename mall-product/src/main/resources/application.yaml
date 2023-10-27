@@ -70,7 +70,7 @@ spring:
   session: #整合spring session 解决session统一存储；完成session共享问题
     store-type: redis
 
-  #配置SpringCache
+  #配置SpringCache开启缓存功能注解：@EnableCaching：Spring Cache比较常用的几个注解：@Cacheable、 @CacheConfig、@CacheEvict、@CachePut、@Caching、@EnableCaching
   cache:
     type: redis
     redis:

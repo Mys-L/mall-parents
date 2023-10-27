@@ -78,7 +78,7 @@
 <!--			<artifactId>redisson-spring-boot-starter</artifactId>-->
 <!--			<version>3.23.2</version>-->
 <!--		</dependency>-->
-		<!--整合SpringCache-->
+		<!--整合SpringCache 开启缓存功能注解：@EnableCaching：Spring Cache比较常用的几个注解：@Cacheable、 @CacheConfig、@CacheEvict、@CachePut、@Caching、@EnableCaching-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
