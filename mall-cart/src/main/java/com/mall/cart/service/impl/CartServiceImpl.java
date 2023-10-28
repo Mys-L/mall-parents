@@ -183,4 +183,35 @@ public class CartServiceImpl implements CartService {
         redisTemplate.delete(cartKey);
     }
 
+    /**
+     * 修改选中的商品
+     */
+    @Override
+    public void checkItem(Long skuId, Integer checked) {
+        CartItem cartItem = getCartItem(skuId);
+        cartItem.setCheck(checked==1?true:false);
+        String str = JSON.toJSONString(cartItem);
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        cartOps.put(skuId.toString(), str);
+    }
+    /**
+     * 修改商品数量
+     */
+    @Override
+    public void changeItemCount(Long skuId, Integer num) {
+        CartItem cartItem = getCartItem(skuId);
+        cartItem.setCount(num);
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        cartOps.put(skuId.toString(),JSON.toJSONString(cartItem));
+    }
+
+    /**
+     * 删除购物车中的商品
+     */
+    @Override
+    public void deleteCartItemById(Integer skuId) {
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        cartOps.delete(skuId.toString());
+    }
+
 }
