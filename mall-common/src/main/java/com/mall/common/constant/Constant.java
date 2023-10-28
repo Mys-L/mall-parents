@@ -110,4 +110,10 @@ public class Constant {
     public static final String LOGIN_USER = "loginUser";
     public static final String NOT_LOGIN = "请先进行登录";
     public static final String SESSION = "GULISESSION";
+    /*-------------------------------------------------------------------------------------------------*/
+
+    /*------------------mall-cart购物车服务有关的常量------------------------------------------------------------------------*/
+    public static final String TEMP_USER_COOKIE_NAME = "user-key";
+    public static final int TEMP_USER_COOKIE_TIMEOUT= 60*60*24*30;
+    public final static String CART_PREFIX = "mall:cart:";
 }
